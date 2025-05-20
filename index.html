@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Saber em Rede - Plataforma de Afiliados</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --border: #e5e7eb;
+      --border-hover: #d1d5db;
+      --bg: #ffffff;
+      --bg2: #f9fafb;
+      --bg3: #f3f4f6;
+      --radius: 12px;
+      --radius-lg: 16px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --muted: #6b7280;
+      --muted-light: #9ca3af;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --info: #06b6d4;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg2);
+      margin: 0;
+      padding: 0;
+      color: #1f2937;
+      line-height: 1.5;
+    }
+    
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      animation: fadeIn 0.2s ease-out;
+    }
+    
+    .modal {
+      background: var(--bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      max-width: 480px;
+      width: 100%;
+      padding: 24px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      z-index: 110;
+      animation: slideUp 0.3s ease-out;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    @media (max-width: 480px) {
+      .modal {
+        padding: 20px 16px;
+      }
+    }
+    
+    .modal-close {
+      position: absolute;
+      right: 16px;
+      top: 16px;
+      background: none;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+    
+    .modal-close:hover {
+      background: var(--bg3);
+      color: var(--danger);
+    }
+    
+    .modal-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-right: 20px;
+    }
+    
+    .modal-title {
+      font-size: 1.5rem;
+      margin: 0;
+      font-weight: 600;
+      color: #111827;
+    }
+    
+    .modal-subtitle {
+      font-size: 0.9375rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    
+    /* Steps */
+    .steps {
+      display: flex;
+      margin-bottom: 8px;
+      position: relative;
+    }
+    
+    .step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    
+    .step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg3);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: 8px;
+      border: 2px solid var(--bg3);
+      transition: all 0.3s;
+      z-index: 2;
+    }
+    
+    .step.active .step-number {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    .step.completed .step-number {
+      background: var(--success);
+      color: white;
+      border-color: var(--success);
+    }
+    
+    .step-label {
+      font-size: 0.8125rem;
+      color: var(--muted);
+      font-weight: 500;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    
+    .step.active .step-label,
+    .step.completed .step-label {
+      color: #111827;
+    }
+    
+    .steps::after {
+      content: '';
+      position: absolute;
+      top: 16px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--bg3);
+      z-index: 1;
+    }
+    
+    .step-progress {
+      position: absolute;
+      top: 16px;
+      left: 0;
+      height: 2px;
+      background: var(--primary);
+      z-index: 1;
+      transition: width 0.3s;
+    }
+    
+    /* Step Content */
+    .step-content {
+      display: none;
+    }
+    
+    .step-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 0.9375rem;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      font-size: 0.9375rem;
+      background: var(--bg);
+      transition: all 0.2s;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+    
+    .input-group {
+      display: flex;
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    
+    .input-group:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+    
+    .input-group-prepend {
+      padding: 0 12px;
+      font-size: 0.9375rem;
+      color: var(--muted);
+      background: var(--bg2);
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+    
+    .input-group input {
+      flex: 1;
+      border: none;
+      padding: 12px 14px;
+      background: transparent;
+      font-size: 0.9375rem;
+    }
+    
+    .input-group input:focus {
+      outline: none;
+    }
+    
+    .balance-info {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .balance-amount {
+      color: var(--success);
+      font-weight: 600;
+    }
+    
+    /* Cards */
+    .card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.2s;
+    }
+    
+    .card.active {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.05);
+      box-shadow: 0 0 0 1px var(--primary);
+    }
+    
+    /* Adicionando hover específico para cards dentro do modal */
+    #withdrawalModal .card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px var(--primary);
+      cursor: pointer;
+    }
+    
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    
+    .card-title {
+      font-weight: 600;
+      font-size: 0.9375rem;
+      margin: 0;
+    }
+    
+    .card-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 20px;
+      background: var(--danger);
+      color: white;
+    }
+    
+    .card-badge.free {
+      background: var(--success);
+    }
+    
+    .card-content {
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+    
+    /* Alert */
+    .alert {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    
+    .alert-warning {
+      background: rgba(245, 158, 11, 0.1);
+      border-left: 4px solid var(--warning);
+      color: var(--muted);
+    }
+    
+    .alert-icon {
+      color: var(--warning);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    
+    /* Table */
+    .table {
+      width: 100%;
+      font-size: 0.8125rem;
+      border-collapse: collapse;
+      margin: 8px 0;
+    }
+    
+    .table th {
+      text-align: left;
+      padding: 6px 8px;
+      font-weight: 500;
+      color: var(--muted);
+      background: var(--bg2);
+    }
+    
+    .table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      font-weight: 500;
+      font-size: 0.9375rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      text-align: center;
+    }
+    
+    #withdrawalModal .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    #withdrawalModal .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+    
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-outline:hover {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.05);
+    }
+    
+    .btn-block {
+      display: flex;
+      width: 100%;
+    }
+    
+    /* Navigation */
+    .step-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+    
+    /* Link */
+    .link {
+      color: var(--primary);
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+    
+    .link:hover {
+      text-decoration: underline;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Utils */
+    .text-muted {
+      color: var(--muted);
+    }
+    
+    .text-success {
+      color: var(--success);
+    }
+    
+    .text-danger {
+      color: var(--danger);
+    }
+    
+    .fw-600 {
+      font-weight: 600;
+    }
+    
+    .mb-0 {
+      margin-bottom: 0;
+    }
+    
+    .mt-2 {
+      margin-top: 8px;
+    }
+    
+    .d-flex {
+      display: flex;
+    }
+    
+    .align-items-center {
+      align-items: center;
+    }
+    
+    .justify-content-between {
+      justify-content: space-between;
+    }
+
+    /* Adicionando padding-top para a área principal */
+    .app-main-area {
+      padding-top: 90px; /* Espaçamento igual à altura do header */
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <img src="components/estacio-logo.png" alt="Estacio Logo" class="header-logo-img">
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Abrir menu"> <span class="material-icons-sharp">menu</span> </button>
+    <nav class="header-nav-desktop">
+        <button class="header-nav-link" id="header-nav-indicacoes" onclick="setActiveTab('indicacoes')"> <span class="material-icons-sharp">list_alt</span><span>Minhas Indicações</span> </button>
+        <button class="header-nav-link" id="header-nav-carteira" onclick="setActiveTab('carteira')"> <span class="material-icons-sharp">account_balance_wallet</span><span>Minha Carteira</span> </button>
+    </nav>
+    <!-- O botão Indicar Agora movido para fora da header-user-section -->
+    <button class="btn btn-primary header-action-button" id="headerOpenShareModalBtn"> <span class="material-icons-sharp">share</span> Indicar Agora </button>
+    <div class="header-user-section">
+        <button id="userMenuToggle" class="user-avatar-button margin-left-4px" aria-label="Menu do Usuário" aria-haspopup="true" aria-expanded="false"> <span class="material-icons-sharp">person</span> </button>
+        <div id="userDropdownMenu" class="user-dropdown-menu" role="menu">
+            <div class="dropdown-header">
+                 <div class="user-info">
+                     <span class="user-name-dropdown">Fulano de Souza</span>
+                     <span class="user-email-dropdown">fulano@email.com</span>
+                 </div>
+            </div>
+            <div class="dropdown-saldo" style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--mdc-divider-color);">
+                 <span class="user-balance-dropdown" style="font-size: 0.875rem; color: var(--mdc-text-secondary-on-surface);">Saldo Disponível: <br><span class="balance-amount" style="font-weight: 700; color: var(--mdc-theme-success);">R$ 1.250,00</span></span>
+                 <a href="#" role="menuitem" class="dropdown-item" style="padding: 0.5rem 0; color: var(--mdc-theme-primary); font-size: 0.875rem;" id="openWithdrawalModalBtn">Sacar Grana</a>
+            </div>
+            <a href="#" role="menuitem" class="dropdown-item" onclick="alert('Abrir Meus Dados'); closeUserMenu(); return false;"> <span class="material-icons-sharp">badge</span> Meus Dados <span class="material-icons-sharp chevron">chevron_right</span> </a>
+            <a href="#" role="menuitem" class="dropdown-item" onclick="alert('Abrir Dados Bancários'); closeUserMenu(); return false;"> <span class="material-icons-sharp">credit_card</span> Dados Bancários <span class="material-icons-sharp chevron">chevron_right</span> </a>
+            <a href="#" role="menuitem" class="dropdown-item" onclick="alert('Abrir Treinamento'); closeUserMenu(); return false;"> <span class="material-icons-sharp">school</span> Treinamento <span class="material-icons-sharp chevron">chevron_right</span> </a>
+            <a href="#" role="menuitem" class="dropdown-item" onclick="alert('Abrir FAQ'); closeUserMenu(); return false;"> <span class="material-icons-sharp">help_outline</span> FAQ <span class="material-icons-sharp chevron">chevron_right</span> </a>
+            <a href="#" role="menuitem" class="dropdown-item" onclick="openRegulamento(); closeUserMenu(); return false;"> <span class="material-icons-sharp">gavel</span> Regulamento <span class="material-icons-sharp chevron">chevron_right</span> </a>
+            <a href="https://wa.me/5511999999999" target="_blank" role="menuitem" class="dropdown-item" onclick="closeUserMenu()"> <span class="material-icons-sharp">support_agent</span> Suporte <span class="material-icons-sharp chevron">chevron_right</span> </a>
+            <div class="dropdown-footer">
+                 <span class="app-name-text" style="display: block; text-align: center; font-size: 0.875rem; font-weight: 500;">Saber em Rede</span>
+                 <span class="app-version-text" style="display: block; text-align: center; font-size: 0.75rem; color: var(--mdc-text-secondary-on-surface);">App v1.0</span>
+            </div>
+        </div>
+    </div>
+  </header>
+
+  <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay"></div>
+  <aside class="mobile-sidebar" id="mobileSidebar">
+    <div class="mobile-sidebar-header"> <span class="mobile-sidebar-logo">Saber em Rede</span> <button class="mobile-sidebar-close" id="mobileSidebarClose" aria-label="Fechar menu"> <span class="material-icons-sharp">close</span> </button> </div>
+    <ul class="mobile-sidebar-nav">
+        <li class="nav-item active" id="mobile-sidebar-item-indicacoes"> <button onclick="setActiveTab('indicacoes'); closeMobileSidebar();"> <span class="material-icons-sharp">list_alt</span> Minhas Indicações </button> </li>
+        <li class="nav-item" id="mobile-sidebar-item-carteira"> <button onclick="setActiveTab('carteira'); closeMobileSidebar();"> <span class="material-icons-sharp">account_balance_wallet</span> Minha Carteira </button> </li>
+        <li class="nav-separator"></li>
+        <li class="nav-item"> <a href="#" onclick="alert('Abrir Meus Dados'); closeMobileSidebar(); return false;"> <span class="material-icons-sharp">badge</span> Meus Dados </a> </li>
+        <li class="nav-item"> <a href="#" onclick="alert('Abrir Dados Bancários'); closeMobileSidebar(); return false;"> <span class="material-icons-sharp">credit_card</span> Dados Bancários </a> </li>
+        <li class="nav-item"> <a href="#" onclick="alert('Abrir Treinamento'); closeMobileSidebar(); return false;"> <span class="material-icons-sharp">school</span> Treinamento </a> </li>
+        <li class="nav-item"> <a href="#" onclick="alert('Abrir FAQ'); closeMobileSidebar(); return false;"> <span class="material-icons-sharp">help_outline</span> FAQ </a> </li>
+        <li class="nav-item"> <a href="#" onclick="openRegulamento(); closeMobileSidebar(); return false;"> <span class="material-icons-sharp">gavel</span> Regulamento </a> </li>
+        <li class="nav-item"> <a href="https://wa.me/5511999999999" target="_blank" onclick="closeMobileSidebar();"> <span class="material-icons-sharp">support_agent</span> Suporte </a> </li>
+    </ul>
+    <div class="mobile-sidebar-footer"> App v1.0 </div>
+  </aside>
+
+  <main class="app-main-area">
+      <div class="main-content" id="page-indicacoes">
+        <!-- Dashboard de Indicações -->
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <span class="material-icons-sharp">group</span>
+                    <h3>Total de Indicações</h3>
+                </div>
+                <div class="dashboard-card-content">
+                    <div class="dashboard-value">25</div>
+                    <div class="dashboard-trend positive">
+                        <span class="material-icons-sharp">trending_up</span>
+                        +5 este mês
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <span class="material-icons-sharp">school</span>
+                    <h3>Matrículas Confirmadas</h3>
+                </div>
+                <div class="dashboard-card-content">
+                    <div class="dashboard-value">18</div>
+                    <div class="dashboard-trend positive">
+                        <span class="material-icons-sharp">trending_up</span>
+                        +3 este mês
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <span class="material-icons-sharp">pending_actions</span>
+                    <h3>Pendentes</h3>
+                </div>
+                <div class="dashboard-card-content">
+                    <div class="dashboard-value">7</div>
+                    <div class="dashboard-trend neutral">
+                        <span class="material-icons-sharp">trending_flat</span>
+                        Mesmo do mês passado
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Lista de Indicações -->
+        <div>
+            <div class="card">
+                <div class="card-header card-header-flex">
+                    <div class="card-header-left">
+                        <input type="text" class="input-search" placeholder="Buscar indicado..." />
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-outline-primary btn-sm">
+                            <span class="material-icons-sharp">filter_list</span>
+                            Filtrar
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm">
+                            <span class="material-icons-sharp">download</span>
+                            Exportar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content-condensed">
+                    <ul class="data-list">
+                        <!-- Exemplos de Status de Indicação -->
+
+                        <!-- Status: Novo (ou Cadastrado) -->
+                        <li class="data-list-item">
+                            <div class="data-list-item-main">
+                                <div class="title">Fernanda Oliveira</div>
+                                <div class="subtitle">Engenharia Civil - 20/07/2024</div>
+                            </div>
+                            <div class="data-list-item-aside">
+                                <span class="status-badge status-novo" title="Indicação criada, aguardando inscrição do aluno.">Novo</span>
+                            </div>
+                        </li>
+
+                        <!-- Status: Inscrito -->
+                        <li class="data-list-item">
+                             <div class="data-list-item-main">
+                                 <div class="title">Lucas Santos</div>
+                                 <div class="subtitle">Arquitetura e Urbanismo - 18/07/2024</div>
+                             </div>
+                             <div class="data-list-item-aside">
+                                 <span class="status-badge status-inscrito" title="Aluno inscrito, aguardando próximos passos na IE.">Inscrito</span>
+                             </div>
+                         </li>
+
+                        <!-- Status: Em Análise pela IE -->
+                        <li class="data-list-item">
+                             <div class="data-list-item-main">
+                                 <div class="title">Mariana Costa</div>
+                                 <div class="subtitle">Medicina Veterinária - Última Atualização: 17/07/2024</div>
+                             </div>
+                             <div class="data-list-item-aside">
+                                 <span class="status-badge status-em-analise-ie" title="Indicação está sob avaliação da instituição.">Em Análise</span>
+                             </div>
+                         </li>
+
+                        <!-- Status: Aprovado pela IE -->
+                        <li class="data-list-item">
+                              <div class="data-list-item-main">
+                                  <div class="title">Pedro Almeida</div>
+                                  <div class="subtitle">Direito - Aprovado em: 15/07/2024</div>
+                              </div>
+                              <div class="data-list-item-aside">
+                                  <span class="status-badge status-aprovado-ie" title="Aluno aprovado pela IE, pronto para matricular.">Aprovado</span>
+                              </div>
+                          </li>
+
+                        <!-- Status: Matrícula Pendente -->
+                        <li class="data-list-item">
+                            <div class="data-list-item-main">
+                                <div class="title">Carolina Souza</div>
+                                <div class="subtitle">Administração - Última Atualização: 14/07/2024</div>
+                            </div>
+                            <div class="data-list-item-aside">
+                                <span class="status-badge status-matricula-pendente" title="Aguardando a confirmação final da matrícula pelo aluno.">Matrícula Pendente</span>
+                            </div>
+                        </li>
+
+                        <!-- Status: Matrícula Confirmada (com comissão) -->
+                        <li class="data-list-item">
+                            <div class="data-list-item-main">
+                                <div class="title">Guilherme Rocha</div>
+                                <div class="subtitle">Análise e Desenvolvimento de Sistemas - Matriculado em: 10/07/2024</div>
+                                <div class="commission">Comissão: R$ 250,00</div>
+                            </div>
+                            <div class="data-list-item-aside">
+                                <span class="status-badge status-matricula-confirmada" title="Sucesso! Indicação convertida em matrícula. Comissão a caminho.">Confirmada</span>
+                            </div>
+                        </li>
+
+                        <!-- Status: Comissão em Processamento -->
+                        <li class="data-list-item">
+                             <div class="data-list-item-main">
+                                 <div class="title">Rafael Lima</div>
+                                 <div class="subtitle">Psicologia - Matrícula em: 08/07/2024</div>
+                                 <div class="commission">Comissão: R$ 200,00 (Em Processamento)</div>
+                             </div>
+                             <div class="data-list-item-aside">
+                                 <span class="status-badge status-comissao-processamento" title="A comissão está sendo processada e logo estará disponível.">Em Processamento</span>
+                             </div>
+                         </li>
+
+                        <!-- Status: Comissão Creditada na Carteira -->
+                        <li class="data-list-item">
+                             <div class="data-list-item-main">
+                                 <div class="title">Isabela Pereira</div>
+                                 <div class="subtitle">Ciências Contábeis - Crédito em: 05/07/2024</div>
+                                 <div class="commission">Comissão: R$ 180,00</div>
+                             </div>
+                             <div class="data-list-item-aside">
+                                 <span class="status-badge status-comissao-creditada" title="Dinheiro na conta! Saldo atualizado na carteira.">Na Carteira</span>
+                             </div>
+                         </li>
+
+                        <!-- Status: Desistente -->
+                        <li class="data-list-item">
+                             <div class="data-list-item-main">
+                                 <div class="title">Thiago Fernandes</div>
+                                 <div class="subtitle">Educação Física - Desistência em: 12/07/2024</div>
+                             </div>
+                             <div class="data-list-item-aside">
+                                 <span class="status-badge status-desistente" title="Indicação não progrediu.">Desistente</span>
+                             </div>
+                         </li>
+
+                        <!-- Status: Inválido -->
+                        <li class="data-list-item">
+                             <div class="data-list-item-main">
+                                 <div class="title">Luiza Martins</div>
+                                 <div class="subtitle">Motivo: Aluno já cadastrado - 19/07/2024</div>
+                             </div>
+                             <div class="data-list-item-aside">
+                                 <span class="status-badge status-invalido" title="Indicação não foi elegível para comissão.">Inválida</span>
+                             </div>
+                         </li>
+
+                        <!-- Status: Cancelado -->
+                        <li class="data-list-item">
+                             <div class="data-list-item-main">
+                                 <div class="title">Felipe Gonçalves</div>
+                                 <div class="subtitle">Motivo: Matrícula Cancelada - 16/07/2024</div>
+                             </div>
+                             <div class="data-list-item-aside">
+                                 <span class="status-badge status-cancelado" title="Indicação ou comissão foi cancelada.">Cancelada</span>
+                             </div>
+                         </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State para Minhas Indicações -->
+        <div class="empty-state empty-state-indicacoes" style="display: none;"> <!-- Inicialmente oculto -->
+            <div class="empty-state-content">
+                <span class="material-icons-sharp empty-state-icon">sentiment_neutral</span>
+                <h3>Você ainda não tem indicações.</h3>
+                <p>Comece agora a ativar sua rede e transformar conexões em recompensas!</p>
+
+                <!-- Passo a Passo no Empty State -->
+                <div class="how-it-works-empty-state">
+                     <h4>Como começar a indicar:</h4>
+                     <ul class="how-it-works-list-empty">
+                         <li>
+                             <span class="material-icons-sharp step-icon">share</span>
+                             <p><strong>1. Compartilhe:</strong> Seu link exclusivo.</p>
+                         </li>
+                         <li>
+                              <span class="material-icons-sharp step-icon">person_add</span>
+                              <p><strong>2. Aluno:</strong> Se inscreve pelo link.</p>
+                         </li>
+                         <li>
+                              <span class="material-icons-sharp step-icon">check_circle</span>
+                              <p><strong>3. Matrícula:</strong> É confirmada.</p>
+                         </li>
+                         <li>
+                              <span class="material-icons-sharp step-icon step-icon-success">paid</span>
+                              <p><strong>4. Comissão:</strong> Você recebe!</p>
+                          </li>
+                     </ul>
+                </div>
+
+                <button class="btn btn-primary btn-lg" id="emptyStateIndicacoesCta"> <span class="material-icons-sharp">share</span> Indicar Agora </button>
+            </div>
+      </div>
+
+         <p class="transparency-text">Comissões são liberadas após matrícula confirmada. Consulte o regulamento para saber mais.</p>
+      </div>
+
+      <div class="main-content" id="page-carteira">
+        <!-- Dashboard da Carteira -->
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <span class="material-icons-sharp">account_balance_wallet</span>
+                    <h3>Saldo Disponível</h3>
+                </div>
+                <div class="dashboard-card-content">
+                    <div class="dashboard-value">R$ 1.250,00</div>
+                    <div class="dashboard-trend positive">
+                        <span class="material-icons-sharp">trending_up</span>
+                        +R$ 250,00 este mês
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <span class="material-icons-sharp">payments</span>
+                    <h3>Total Sacado</h3>
+                </div>
+                <div class="dashboard-card-content">
+                    <div class="dashboard-value">R$ 3.500,00</div>
+                    <div class="dashboard-trend positive">
+                        <span class="material-icons-sharp">trending_up</span>
+                        +R$ 500,00 este mês
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <span class="material-icons-sharp">pending_actions</span>
+                    <h3>Saque Pendente</h3>
+                </div>
+                <div class="dashboard-card-content">
+                    <div class="dashboard-value">R$ 0,00</div>
+                    <div class="dashboard-trend neutral">
+                        <span class="material-icons-sharp">trending_flat</span>
+                        Sem pendências
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Histórico de Transações -->
+        <div>
+            <div class="card">
+                <div class="card-header card-header-flex">
+                    <div class="card-header-left">
+                        <input type="text" class="input-search" placeholder="Buscar transação..." />
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-outline-primary btn-sm">
+                            <span class="material-icons-sharp">filter_list</span>
+                            Filtrar
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm">
+                            <span class="material-icons-sharp">download</span>
+                            Exportar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content-condensed">
+                    <ul class="data-list">
+                        <li class="data-list-item">
+                            <div class="data-list-item-main">
+                                <div class="title">Saque para Conta Bancária</div>
+                                <div class="subtitle">Banco XPTO - Ag: 0001 C/C: 12345-6</div>
+                            </div>
+                            <div class="data-list-item-aside">
+                                <div class="value negative">- R$ 500,00</div>
+                                <div class="date">16/07/2024</div>
+                            </div>
+                        </li>
+                        <li class="data-list-item">
+                            <div class="data-list-item-main">
+                                <div class="title">Comissão Recebida</div>
+                                <div class="subtitle">Indicação: Ana Beatriz Costa</div>
+                            </div>
+                            <div class="data-list-item-aside">
+                                <div class="value positive">+ R$ 150,00</div>
+                                <div class="date">15/07/2024</div>
+                            </div>
+                        </li>
+                        <li class="data-list-item">
+                            <div class="data-list-item-main">
+                                <div class="title">Comissão Recebida</div>
+                                <div class="subtitle">Indicação: João Pedro Almeida</div>
+                            </div>
+                            <div class="data-list-item-aside">
+                                <div class="value positive">+ R$ 100,00</div>
+                                <div class="date">14/07/2024</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State para Minha Carteira -->
+        <div class="empty-state empty-state-carteira" style="display: none;"> <!-- Inicialmente oculto -->
+             <div class="empty-state-content">
+                 <span class="material-icons-sharp empty-state-icon">account_balance_wallet</span>
+                 <h3>Sua carteira está vazia.</h3>
+                 <p>Indique alunos e veja suas comissões aparecerem aqui!</p>
+                 <button class="btn btn-primary btn-lg" id="emptyStateCarteiraCta"> <span class="material-icons-sharp">share</span> Indicar meu primeiro aluno </button>
+             </div>
+         </div>
+
+         <p class="transparency-text">Certifique-se de que seus dados bancários no perfil estão corretos para receber. Consulte o regulamento para saques.</p>
+      </div>
+  </main>
+
+  <!-- MODAL DE INDICAÇÃO -->
+  <div id="shareModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content share-modal-content">
+        <button id="closeShareModal" class="modal-close-btn">×</button>
+        
+        <div class="modal-header">
+            <h3 class="modal-title">Sua Rede Vale Muito!</h3>
+            <p class="modal-subtitle">Ative suas conexões para indicar alunos e receba comissões por cada matrícula confirmada.</p>
+        </div>
+
+        <div class="modal-body">
+            <!-- Seção de Copiar Link -->
+            <div class="share-section share-copy-link">
+                <h4>Seu Link Exclusivo:</h4>
+                <div class="share-link-area">
+                    <input type="text" id="affiliateLinkModalInput" value="https://sabemrede.com/indique/SEU_CODIGO_UNICO" readonly class="share-link-input">
+                    <button id="copyLinkFromModalBtn" class="btn btn-primary">
+                        <span class="material-icons-sharp">content_copy</span>
+                        Copiar Link
+                    </button>
+                </div>
+                <p class="copy-success-message" style="display: none;">Link copiado com sucesso!</p>
+            </div>
+
+            <!-- Manter o divider opcionalmente -->
+            <div class="divider"><span>Informações</span></div>
+
+        </div>
+
+        <div class="modal-footer">
+             <!-- Remover Mensagem de Transparência -->
+            <div class="footer-links">
+                 <a href="#" onclick="alert('Abrir FAQ'); return false;" class="btn btn-link btn-sm">
+                     <span class="material-icons-sharp">help_outline</span>
+                     Como funciona?
+                 </a>
+                 <a href="#" onclick="openRegulamento(); return false;" class="btn btn-link btn-sm">
+                     <span class="material-icons-sharp">gavel</span>
+                     Regulamento completo
+                </a>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE SAQUE -->
+  <div id="withdrawalModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content withdrawal-modal-content">
+      <button id="closeWithdrawalModal" class="modal-close-btn" onclick="closeWithdrawalModal()">×</button>
+      
+      <div class="modal-header">
+        <h3 class="modal-title">Solicitar Saque</h3>
+        <p class="modal-subtitle">Escolha o valor e o método de saque para transferir seu dinheiro</p>
+      </div>
+      
+      <!-- Steps Indicator -->
+      <div class="steps">
+        <div class="step-progress" id="stepProgress" style="width: 33%"></div>
+        <div class="step active" data-step="1">
+          <div class="step-number">1</div>
+          <div class="step-label">Valor</div>
+        </div>
+        <div class="step" data-step="2">
+          <div class="step-number">2</div>
+          <div class="step-label">Conta</div>
+        </div>
+        <div class="step" data-step="3">
+          <div class="step-number">3</div>
+          <div class="step-label">Método</div>
+        </div>
+      </div>
+      
+      <!-- Step 1: Amount -->
+      <div class="step-content active" id="step1">
+        <div class="alert alert-warning">
+          <div class="alert-icon">
+            <span class="material-icons-sharp">warning</span>
+          </div>
+          <div>
+            <strong>Valor mínimo:</strong> R$ 20,00. Para <strong>PJ</strong>, pagamento em até 10 dias após nota fiscal.
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="withdrawalAmountInput" class="form-label">Quanto você deseja sacar?</label>
+          <div class="input-group">
+            <div class="input-group-prepend">R$</div>
+            <input type="number" id="withdrawalAmountInput" class="form-control" min="20" max="1250" step="1" placeholder="0,00">
+          </div>
+          <div class="balance-info">
+            <span class="material-icons-sharp">info</span>
+            Saldo disponível: <span class="balance-amount">R$ 1.250,00</span>
+          </div>
+        </div>
+        
+        <div class="step-nav">
+          <button class="btn btn-outline" onclick="closeWithdrawalModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="nextWithdrawalStep(2)">Continuar</button>
+        </div>
+      </div>
+      
+      <!-- Step 2: Account -->
+      <div class="step-content" id="step2">
+        <div class="form-group">
+          <label class="form-label">Selecione a conta para receber</label>
+          
+          <div class="card active">
+            <div class="card-header">
+              <h3 class="card-title">Banco Inter - 0001</h3>
+            </div>
+            <div class="card-content">
+              João Silva<br>
+              Agência: 0001 • Conta: 123456-7
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Banco do Brasil - 1234</h3>
+            </div>
+            <div class="card-content">
+              PJ | Agência XYZ<br>
+              Agência: 1234 • Conta: 987654-3
+            </div>
+          </div>
+          
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <span class="text-muted" style="font-size: 0.8125rem;">Não encontrou sua conta?</span>
+            <a class="link" onclick="alert('Ir para cadastro de nova conta')">Adicionar nova conta</a>
+          </div>
+        </div>
+        
+        <div class="step-nav">
+          <button class="btn btn-outline" onclick="prevWithdrawalStep()">Voltar</button>
+          <button class="btn btn-primary" onclick="nextWithdrawalStep(3)">Continuar</button>
+        </div>
+      </div>
+      
+      <!-- Step 3: Method -->
+      <div class="step-content" id="step3">
+        <div class="form-group">
+          <label class="form-label">Escolha o método de saque</label>
+          
+          <div class="card active">
+            <div class="card-header">
+              <h3 class="card-title">Saque Rápido</h3>
+              <span class="card-badge">Taxa 5%</span>
+            </div>
+            <div class="card-content">
+              <p class="mb-0">Receba no mesmo dia útil (solicitações até 12h). Após esse horário, no próximo dia útil.</p>
+              <p class="text-danger fw-600 mt-2">Exemplo: Saque de R$100 = Taxa de R$5</p>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Saque Regular</h3>
+              <span class="card-badge free">Sem taxa</span>
+            </div>
+            <div class="card-content">
+              <p>Programe seu saque para as datas de pagamento regulares.</p>
+              
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Período de Atividade</th>
+                    <th>Data de Pagamento</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Dia 01 até 15</td>
+                    <td>Próximo dia 25</td>
+                  </tr>
+                  <tr>
+                    <td>Dia 16 até 31</td>
+                    <td>Próximo dia 10</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="alert alert-warning">
+            <div class="alert-icon">
+              <span class="material-icons-sharp">warning</span>
+            </div>
+            <div>
+              <strong>Dica:</strong> Use o Saque Rápido para urgências. Para economizar, programe pelo Saque Regular.
+            </div>
+          </div>
+        </div>
+        
+        <div class="step-nav">
+          <button class="btn btn-outline" onclick="prevWithdrawalStep()">Voltar</button>
+          <button class="btn btn-primary" onclick="solicitarSaque()">Confirmar Saque</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Variáveis globais para o modal de saque
+    let currentWithdrawalStep = 1;
+    
+    function closeWithdrawalModal() {
+      document.getElementById('withdrawalModal').style.display = 'none';
+      // Resetar para o primeiro passo quando fechar
+      currentWithdrawalStep = 1;
+      document.getElementById('stepProgress').style.width = '33%';
+      document.querySelectorAll('.step').forEach(step => {
+        step.classList.remove('active', 'completed');
+      });
+      document.querySelector('.step[data-step="1"]').classList.add('active');
+      document.querySelectorAll('.step-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById('step1').classList.add('active');
+    }
+    
+    function nextWithdrawalStep(step) {
+      // Validar o passo atual antes de prosseguir
+      if (currentWithdrawalStep === 1) {
+        const valor = document.getElementById('withdrawalAmountInput').value;
+        if (!valor || parseFloat(valor) < 20) {
+          alert('O valor mínimo para saque é R$ 20,00');
+          return;
+        }
+      }
+      
+      // Esconder passo atual
+      document.getElementById(`step${currentWithdrawalStep}`).classList.remove('active');
+      document.querySelector(`.step[data-step="${currentWithdrawalStep}"]`).classList.remove('active');
+      
+      // Mostrar próximo passo
+      currentWithdrawalStep = step;
+      document.getElementById(`step${currentWithdrawalStep}`).classList.add('active');
+      document.querySelector(`.step[data-step="${currentWithdrawalStep}"]`).classList.add('active');
+      
+      // Atualizar barra de progresso
+      const progress = (currentWithdrawalStep - 1) * 33.33;
+      document.getElementById('stepProgress').style.width = `${progress}%`;
+      
+      // Marcar passos anteriores como completados
+      for (let i = 1; i < currentWithdrawalStep; i++) {
+        document.querySelector(`.step[data-step="${i}"]`).classList.add('completed');
+      }
+    }
+    
+    function prevWithdrawalStep() {
+      // Esconder passo atual
+      document.getElementById(`step${currentWithdrawalStep}`).classList.remove('active');
+      document.querySelector(`.step[data-step="${currentWithdrawalStep}"]`).classList.remove('active');
+      
+      // Mostrar passo anterior
+      currentWithdrawalStep--;
+      document.getElementById(`step${currentWithdrawalStep}`).classList.add('active');
+      document.querySelector(`.step[data-step="${currentWithdrawalStep}"]`).classList.add('active');
+      
+      // Atualizar barra de progresso
+      const progress = (currentWithdrawalStep - 1) * 33.33;
+      document.getElementById('stepProgress').style.width = `${progress}%`;
+    }
+    
+    function solicitarSaque() {
+      const valor = document.getElementById('withdrawalAmountInput').value;
+      if (!valor || parseFloat(valor) < 20) {
+        alert('O valor mínimo para saque é R$ 20,00');
+        return;
+      }
+      
+      // Aqui você normalmente enviaria a requisição para seu backend
+      alert('Saque solicitado com sucesso!');
+      closeWithdrawalModal();
+    }
+    
+    // Funcionalidade de seleção de cards
+    document.addEventListener('DOMContentLoaded', function() {
+      const cards = document.querySelectorAll('.card');
+      
+      cards.forEach(card => {
+        card.addEventListener('click', function() {
+          // Remover classe active de todos os cards neste passo
+          this.parentElement.querySelectorAll('.card').forEach(c => {
+            c.classList.remove('active');
+          });
+          
+          // Adicionar classe active ao card clicado
+          this.classList.add('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

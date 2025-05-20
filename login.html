@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Saber em Rede - Login/Cadastro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5; /* Cor de fundo clara */
+            color: #212529; /* Cor de texto primária */
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .left-panel {
+            width: 50%;
+            background: linear-gradient(to bottom right, #FF9900, #E68A00); /* Gradiente laranja */
+            color: #FFFFFF; /* Texto branco para contraste */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            /* Estilos para customização da IE podem ser aplicados aqui */
+            text-align: center;
+        }
+
+        .right-panel {
+            width: 50%;
+            background-color: #ffffff; /* Cor de fundo para o painel de formulários */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            overflow-y: auto; /* Adiciona scroll se o conteúdo for muito longo */
+            flex-direction: column; /* Empilha os itens verticalmente */
+        }
+
+        .welcome-text {
+            margin-bottom: 30px; /* Espaçamento abaixo do texto de boas-vindas */
+            text-align: left; /* Alinha o texto à esquerda */
+            width: 100%; /* Garante que o bloco ocupe a largura do container */
+        }
+
+        .form-container {
+            max-width: 400px; /* Largura máxima para o conteúdo do formulário */
+            width: 100%;
+            text-align: left;
+        }
+
+        .form-step {
+            display: none; /* Inicialmente todos ocultos */
+        }
+
+        .form-step.active {
+            display: block; /* Apenas o passo ativo é exibido */
+        }
+
+        .form-header h2 {
+            color: #003B73; /* Cor primária */
+            margin-bottom: 10px;
+        }
+
+        .form-header p {
+            color: #6c757d; /* Cor secundária */
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+         .form-group input[type="text"]:focus,
+         .form-group input[type="email"]:focus,
+         .form-group input[type="password"]:focus {
+            outline: none;
+            border-color: #007bff; /* Cor de foco similar ao bootstrap */
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+         }
+
+        .button-group {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .button-group button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: #FF9900; /* Laranja primário */
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background-color: #E68A00; /* Laranja hover */
+        }
+
+         .btn-outline {
+            background-color: transparent;
+            color: #FF9900; /* Laranja primário */
+            border: 1px solid #FF9900;
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(255, 153, 0, 0.1); /* Laranja com transparência */
+        }
+
+         /* Responsividade básica */
+        @media (max-width: 768px) {
+          .login-container {
+            flex-direction: column; /* Empilha os painéis em telas menores */
+          }
+
+          .left-panel, .right-panel {
+            width: 100%; /* Ocupa a largura total */
+            min-height: auto; /* Altura automática */
+          }
+
+          .left-panel {
+              padding: 40px 20px; /* Ajusta padding */
+          }
+
+          .right-panel {
+              padding: 40px 20px; /* Ajusta padding */
+          }
+
+           .form-container {
+               max-width: 100%; /* Usa a largura total disponível */
+           }
+        }
+
+        /* Estilos para os links de login social */
+        .social-login-links {
+            margin-top: 20px; /* Espaçamento acima */
+            text-align: center;
+        }
+
+        .social-login-links a {
+            margin: 0 10px; /* Espaçamento entre os links */
+            color: #003B73; /* Cor similar ao azul primário */
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .social-login-links a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="left-panel">
+            <!-- Conteúdo customizável pela IE (logo, ilustração, texto) -->
+            <div>
+                <img src="components/logo-saber-branco.png" alt="Logo Saber em Rede" style="max-width: 180px; margin-bottom: 30px;">
+                <!-- Remover o texto de boas-vindas daqui -->
+            </div>
+        </div>
+
+        <div class="right-panel">
+             <div class="already-have-account" style="text-align: right; margin-bottom: 40px;">
+                <span style="color: #6c757d; font-size: 0.9rem; margin-right: 5px;">Já tem conta?</span>
+                <button class="btn-outline" onclick="showStep('login')" style="padding: 5px 15px; font-size: 0.9rem; border-radius: 20px;">Entrar</button>
+            </div>
+            
+            <div class="form-container" style="text-align: left;">
+                <!-- Texto de boas-vindas e subtítulo -->
+                <div class="form-header" style="margin-bottom: 30px;">
+                    <h2 style="font-size: 1.8rem; margin-bottom: 5px; color: #212529;">Bem-vindo(a) à Plataforma de Afiliados!</h2>
+                    <p style="font-size: 1rem; color: #6c757d;">Crie sua conta para começar a indicar.</p>
+                </div>
+
+                <!-- Formulário de Cadastro (inspirado na referência) -->
+                <div id="register-form" class="form-step active">
+                    <div class="form-group">
+                        <label for="register-name">Nome</label>
+                        <input type="text" id="register-name" placeholder="Seu nome completo">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">E-mail</label>
+                        <input type="email" id="register-email" placeholder="Seu melhor e-mail">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Senha</label>
+                        <input type="password" id="register-password" placeholder="Pelo menos 8 caracteres">
+                         <!-- Ícone de mostrar/esconder senha pode ser adicionado depois -->
+                    </div>
+
+                    <button class="btn-primary" style="width: 100%; padding: 12px; font-size: 1.1rem; border-radius: 8px; margin-top: 20px;" onclick="handleCadastro()">Cadastrar-se</button>
+
+                    <!-- Login Social com Ícones -->
+                    <div style="text-align: center; margin-top: 30px; margin-bottom: 20px; color: #6c757d; font-size: 0.9rem;">ou crie sua conta com</div>
+                    
+                    <div class="social-icons" style="display: flex; justify-content: center; gap: 15px;">
+                         <a href="#" onclick="alert('Login com Facebook')" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid #ced4da; border-radius: 50%; color: #007bff; text-decoration: none;">F</a> <!-- Placeholder para ícone Facebook -->
+                         <a href="#" onclick="alert('Login com LinkedIn')" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid #ced4da; border-radius: 50%; color: #0e76a8; text-decoration: none;">in</a> <!-- Placeholder para ícone LinkedIn -->
+                         <a href="#" onclick="alert('Login com Google')" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid #ced4da; border-radius: 50%; color: #db4437; text-decoration: none;">G</a> <!-- Placeholder para ícone Google -->
+                    </div>
+                </div>
+
+                <!-- Formulário de Login (inicialmente oculto) -->
+                 <div id="login-form" class="form-step">
+                    <div class="form-header" style="margin-bottom: 30px;">
+                        <h2 style="font-size: 1.8rem; margin-bottom: 5px; color: #212529;">Acessar Sua Conta</h2>
+                        <p style="font-size: 1rem; color: #6c757d;">Insira seus dados para continuar.</p>
+                    </div>
+                     <div class="form-group">
+                        <label for="login-email">E-mail</label>
+                        <input type="email" id="login-email" placeholder="Seu e-mail cadastrado">
+                    </div>
+                     <div class="form-group">
+                        <label for="login-password">Senha</label>
+                        <input type="password" id="login-password" placeholder="Sua senha">
+                         <!-- Link para esqueceu senha movido aqui -->
+                         <p style="text-align: right; margin-top: 5px; font-size: 0.875rem;"><a href="#" onclick="alert('Redirecionar para página de recuperação de senha')" style="color: #007bff; text-decoration: none;">Esqueceu sua senha?</a></p>
+                    </div>
+
+                    <button class="btn-primary" style="width: 100%; padding: 12px; font-size: 1.1rem; border-radius: 8px; margin-top: 20px;" onclick="handleLogin()">Entrar</button>
+
+                     <!-- Opção para criar conta -->
+                     <div style="text-align: center; margin-top: 30px; font-size: 0.9rem;">
+                         <span style="color: #6c757d;">Não tem conta?</span> <a href="#" onclick="showStep('register-form')" style="color: #007bff; text-decoration: none; font-weight: 500;">Crie uma agora</a>
+                     </div>
+                 </div>
+
+            </div>
+        </div>
+    </div>
+
+  <script>
+    let currentForm = 'register-form'; // Pode ser 'register-form' ou 'login-form'
+
+    function showStep(formId) {
+      document.querySelectorAll('.form-step').forEach(step => {
+        step.classList.remove('active');
+      });
+      document.getElementById(formId).classList.add('active');
+      currentForm = formId;
+
+       // Atualizar o link/botão no canto superior
+       const alreadyHaveAccountDiv = document.querySelector('.already-have-account');
+       if (formId === 'register-form') {
+            alreadyHaveAccountDiv.innerHTML = '<span style="color: #6c757d; font-size: 0.9rem; margin-right: 5px;">Já tem conta?</span> <button class="btn-outline" onclick="showStep(\'login-form\')" style="padding: 5px 15px; font-size: 0.9rem; border-radius: 20px;">Entrar</button>';
+       } else {
+            alreadyHaveAccountDiv.innerHTML = '<span style="color: #6c757d; font-size: 0.9rem; margin-right: 5px;">Não tem conta?</span> <button class="btn-outline" onclick="showStep(\'register-form\')" style="padding: 5px 15px; font-size: 0.9rem; border-radius: 20px;">Cadastrar-se</button>';
+       }
+    }
+
+    function handleLogin() {
+      // Lógica de login aqui
+      alert('Processando login...');
+      // Exemplo de redirecionamento após login bem sucedido:
+      // window.location.href = 'index.html';
+    }
+
+    function handleCadastro() {
+      // Lógica de cadastro aqui
+      alert('Processando cadastro...');
+      // Exemplo de redirecionamento após cadastro bem sucedido:
+      // window.location.href = 'index.html';
+    }
+
+    // Inicializar mostrando o formulário de cadastro
+    document.addEventListener('DOMContentLoaded', () => {
+        showStep(currentForm);
+    });
+
+  </script>
+</body>
+</html> 

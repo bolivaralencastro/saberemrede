@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Onboarding Afiliados - Saber em Rede</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <link href="css/onboarding.css" rel="stylesheet">
+    <style>
+      :root {
+        --primary: #FF9900; /* Laranja principal (adaptado) */
+        --primary-light: #FFEDD5; /* Laranja claro */
+        --primary-hover: #E68A00; /* Laranja hover (adaptado) */
+        --secondary: #10B981; /* Verde secundário */
+        --border: #E5E7EB;
+        --bg: #FFFFFF;
+        --bg2: #F9FAFB;
+        --bg3: #F3F4F6;
+        --text: #1F2937;
+        --muted: #6B7280;
+        --danger: #EF4444;
+        --warning: #F59E0B;
+        --radius: 8px;
+        --radius-lg: 12px;
+        --shadow: 0 4px 16px rgba(0,0,0,0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: var(--bg3); /* Fundo leve para o body */
+        color: var(--text);
+        line-height: 1.5;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 0;
+        padding-bottom: 80px; /* Espaço para a navegação fixa (ajustar se necessário) */
+      }
+
+      /* Logo no canto superior esquerdo */
+      .top-left-logo {
+        position: fixed; /* Fixa a logo na tela */
+        top: 20px; /* Distância do topo */
+        left: 20px; /* Distância da esquerda */
+        height: 40px; /* Altura da logo (ajustar conforme necessário) */
+        z-index: 100; /* Garante que a logo fique acima de outros elementos */
+      }
+
+      .onboarding-container {
+        max-width: 600px;
+        margin: 0 auto; /* Centraliza o container horizontalmente */
+        padding: 20px; /* Adiciona padding interno */
+        width: 100%;
+        position: relative;
+        flex-grow: 0; /* Não permite que o container ocupe todo o espaço, para centralizar */
+        background-color: transparent; /* Garante que não tenha fundo próprio */
+        box-shadow: none; /* Remove qualquer sombra do container */
+      }
+
+      /* Novo cabeçalho simplificado */
+      .header {
+        text-align: center;
+        padding: 16px 20px; /* Ajusta padding */
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+        position: fixed; /* Torna o header fixo */
+        top: 0; /* Fixa no topo */
+        left: 0;
+        right: 0;
+        z-index: 10; /* Garante que fique acima do conteúdo */
+        display: flex; /* Adicionado display flex */
+        align-items: center; /* Centraliza verticalmente */
+        justify-content: center; /* Centraliza horizontalmente */
+        height: 85px; /* Altura fixa para o padding do body */
+      }
+
+      .back-btn {
+        position: absolute;
+        left: 16px;
+        top: 50%; /* Centraliza verticalmente */
+        transform: translateY(-50%); /* Ajusta centralização */
+        background: none;
+        border: none;
+        color: #003B73; /* Azul primário do tema */
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        text-decoration: none; /* Remove sublinhado */
+      }
+
+      .back-btn:hover { text-decoration: underline; }
+
+      .back-btn .material-icons-sharp { font-size: 20px; }
+
+      .logo-container {
+           position: absolute;
+           left: 50%;
+           transform: translateX(-50%);
+           top: 50%;
+           transform: translate(-50%, -50%); /* Centraliza a logo */
+      }
+
+      .logo {
+        height: 32px;
+        /* margin-bottom: 12px; Removido, centralizado no container */
+      }
+
+      .header-content {
+           text-align: center;
+           margin-top: 40px; /* Espaço abaixo da logo no header */
+      }
+
+      .title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+        color: var(--primary);
+      }
+
+      .subtitle {
+        font-size: 1rem;
+        color: var(--muted);
+        max-width: 80%;
+        margin: 0 auto;
+      }
+
+      /* Step Header */
+      .step-header {
+        padding: 24px; /* Ajusta padding */
+        margin-bottom: 0; /* Removido margin-bottom */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .step-progress {
+        font-size: 0.875rem;
+        color: var(--muted);
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+
+      .step-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        text-align: left; /* Alinhado à esquerda */
+        color: var(--primary);
+      }
+
+      /* Step Content */
+      .step-content {
+        background: var(--bg); /* Mantém o fundo branco para o conteúdo do passo */
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        margin: 0 auto 24px auto; /* Centraliza horizontalmente */
+        max-width: calc(600px - 40px); /* Limita a largura considerando padding do container */
+        width: 100%; /* Garante que o conteúdo ocupe a largura máxima */
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        position: relative;
+      }
+
+      .step-image {
+        width: 100%;
+        aspect-ratio: 3 / 2; /* Proporção 3:2 (largura para altura) */
+        background-image: linear-gradient(to top right, var(--primary-hover), var(--primary-light)); /* Ajustado para laranja escuro no canto inferior esquerdo */
+        border-radius: var(--radius);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        color: white; /* Cor do texto placeholder */
+        font-size: 1rem; /* Tamanho da fonte */
+        font-weight: 500; /* Peso da fonte */
+      }
+
+      .step-image img {
+        display: block; /* Remove espaço extra abaixo da imagem */
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .step-description {
+        color: var(--muted);
+        margin-bottom: 24px;
+        line-height: 1.6;
+      }
+
+      .step-note {
+        font-size: 0.875rem;
+        color: var(--muted);
+        padding: 12px;
+        background: var(--bg2);
+        border-radius: var(--radius);
+        margin-top: 16px;
+        border-left: 3px solid var(--primary);
+      }
+
+      /* Navigation */
+      .step-navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 24px;
+        position: fixed; /* Torna a navegação fixa */
+        bottom: 0; /* Fixa na parte inferior */
+        left: 0;
+        right: 0;
+        background: var(--bg); /* Fundo branco */
+        border-top: 1px solid var(--border); /* Borda superior */
+        height: 80px; /* Altura fixa para o padding do body */
+        z-index: 10;
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 20px;
+        border-radius: var(--radius);
+        font-weight: 500;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        text-decoration: none;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-hover);
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--primary);
+        border: 1px solid var(--primary);
+      }
+
+      .btn-outline:hover {
+        background: var(--primary-light);
+      }
+
+      .btn-text {
+        background: transparent;
+        color: var(--muted);
+        font-weight: 400;
+      }
+
+      .btn-text:hover {
+        color: var(--primary);
+      }
+
+      /* Progress Indicator */
+      .progress-container {
+        display: flex;
+        gap: 8px;
+        margin-top: 0; /* Removido margin-top */
+      }
+
+      .progress-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--border);
+        transition: all 0.3s ease; /* Adicionado transição */
+      }
+
+      .progress-dot.active {
+        background: var(--primary);
+        width: 16px; /* Aumenta a largura para o dot ativo */
+        border-radius: 4px; /* Transforma em retângulo arredondado */
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .fade-in {
+        animation: fadeIn 0.4s ease-out forwards;
+      }
+
+      /* Button Group for Back and Next/Complete */
+      .button-group {
+        display: flex;
+        gap: 4px; /* Espaço de 4px entre os botões */
+        align-items: center;
+      }
+    </style>
+</head>
+<body>
+  <img src="components/saberemrede.png" alt="Logo Saber em Rede" class="top-left-logo">
+  <div class="onboarding-container">
+    <!-- Step 1: Seu Link Exclusivo -->
+    <div class="onboarding-step-section" data-step="1">
+        <div class="step-header">
+        </div>
+        <div class="step-content">
+          <div class="step-image">
+            <img src="components/1.png" alt="Imagem da Primeira Etapa">
+          </div>
+          <h2 class="step-title">Bem-vindo(a) ao Saber em Rede!</h2>
+          <p class="step-description">Descubra como é fácil transformar sua rede de contatos em recompensas. Este tour rápido mostrará o caminho para indicar alunos e ganhar comissões!</p>
+        </div>
+    </div>
+
+    <!-- Step 2: Seu Link Exclusivo -->
+    <div class="onboarding-step-section" data-step="2">
+        <div class="step-header">
+        </div>
+        <div class="step-content">
+          <div class="step-image">
+            <img src="components/link.png" alt="Imagem do Link Exclusivo">
+          </div>
+          <h2 class="step-title">Seu Link Exclusivo</h2>
+          <p class="step-description">Cada afiliado tem um link único e pessoal. É através dele que suas indicações são rastreadas. Compartilhe este link com amigos, família e contatos que queiram estudar!</p>
+          <div class="step-note">Dica: Use suas redes sociais para alcançar mais pessoas!</div>
+        </div>
+    </div>
+
+    <!-- Step 3: Do Cadastro à Matrícula -->
+    <div class="onboarding-step-section" data-step="3">
+        <div class="step-header">
+        </div>
+        <div class="step-content">
+          <div class="step-image">
+            <img src="components/2.png" alt="Imagem da Terceira Etapa">
+          </div>
+          <h2 class="step-title">Do Cadastro à Matrícula</h2>
+          <p class="step-description">Quando alguém se cadastra usando seu link, nós acompanhamos todo o processo. Sua comissão é gerada assim que a matrícula é confirmada pela Instituição de Ensino.</p>
+        </div>
+    </div>
+
+    <!-- Step 4: Acompanhe no Dashboard -->
+    <div class="onboarding-step-section" data-step="4">
+        <div class="step-header">
+        </div>
+        <div class="step-content">
+          <div class="step-image">
+            <img src="components/grana.png" alt="Imagem de Acompanhamento no Dashboard">
+          </div>
+          <h2 class="step-title">Acompanhe Tudo no Dashboard</h2>
+          <p class="step-description">Na plataforma, você terá acesso a um painel completo: veja quantas indicações fez, quantos alunos se matricularam e o saldo das suas comissões disponíveis.</p>
+        </div>
+    </div>
+
+    <!-- Step 5: Solicite Seu Saque -->
+    <div class="onboarding-step-section" data-step="5">
+        <div class="step-header">
+        </div>
+        <div class="step-content">
+          <div class="step-image">
+            <img src="components/saque.png" alt="Imagem de Solicitação de Saque">
+          </div>
+          <h2 class="step-title">Solicite o Saque das Suas Comissões!</h2>
+          <p class="step-description">Com o saldo disponível na sua carteira, você pode solicitar o saque diretamente para a sua conta bancária cadastrada. É rápido, fácil e seguro!</p>
+          <div class="step-note">Valor mínimo para saque: R$ 20,00</div>
+        </div>
+    </div>
+
+    <!-- Step 6: Pronto para Começar -->
+    <div class="onboarding-step-section" data-step="6">
+        <div class="step-header">
+        </div>
+        <div class="step-content">
+          <div class="step-image">
+            <img src="components/6.png" alt="Imagem da Última Etapa">
+          </div>
+          <h2 class="step-title">Pronto para Começar!</h2>
+          <p class="step-description">Agora você está pronto para começar a indicar alunos e ganhar recompensas! Acesse seu painel para ver todos os recursos disponíveis.</p>
+        </div>
+    </div>
+
+  </div>
+
+  <!-- Navigation -->
+  <div class="step-navigation">
+    <span id="stepProgressText" style="font-size: 0.875rem; color: var(--muted); font-weight: 500;"></span>
+    <div class="progress-container">
+      <div class="progress-dot active"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+    </div>
+
+    <div class="button-group"> <!-- Agrupa os botões de ação -->
+      <button class="btn btn-text" id="btnBack">Voltar</button>
+      <button class="btn btn-primary" id="btnNext">Próximo</button>
+    </div>
+  </div>
+
+  <script>
+    // Current step tracking
+    let currentStep = 1;
+    const totalSteps = 6;
+    const stepSections = document.querySelectorAll('.onboarding-step-section');
+    const progressDots = document.querySelectorAll('.progress-dot');
+    const btnNext = document.getElementById('btnNext');
+    const stepProgressText = document.getElementById('stepProgressText');
+    const onboardingContainer = document.querySelector('.onboarding-container');
+    const btnBack = document.getElementById('btnBack');
+
+    function showStep(step) {
+      stepSections.forEach(section => { section.style.display = 'none'; });
+
+      const currentSection = document.querySelector(`.onboarding-step-section[data-step="${step}"]`);
+      if (currentSection) {
+           currentSection.style.display = 'block';
+      }
+
+      stepProgressText.textContent = `Passo ${step} de ${totalSteps}`;
+      progressDots.forEach((dot, index) => {
+        dot.classList.toggle('active', index < step);
+      });
+
+      if (step === totalSteps) {
+        btnNext.textContent = 'Concluir';
+      } else {
+        btnNext.textContent = 'Próximo';
+      }
+
+      window.scrollTo({
+          top: 0, // Não precisa rolar, o conteúdo já está centralizado
+          behavior: 'smooth'
+      });
+    }
+
+    btnNext.addEventListener('click', () => {
+      if (currentStep < totalSteps) {
+        currentStep++;
+        showStep(currentStep);
+      } else {
+        window.location.href = 'index.html';
+      }
+    });
+
+    btnBack.addEventListener('click', () => {
+      if (currentStep > 1) {
+        currentStep--;
+        showStep(currentStep);
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        showStep(currentStep);
+    });
+  </script>
+</body>
+</html> 
